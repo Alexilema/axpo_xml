@@ -158,3 +158,14 @@ df = pd.DataFrame(dict_list)
 #%%
 # Data cleansing
 
+# Turn datetime cols to datetime type
+for col in df.columns:
+    if 'timestamp' in col.lower():
+        
+        # Turn to datetime (UTC+02:00 means these values are  LT Local Time)
+        df[col] = pd.to_datetime(df[col])
+        
+        # Transform UTC+2 to UTC
+        df[col] = df[col].dt.tz_convert("UTC")
+        
+OJO ,ESTO CAMBIA LOS DIA´S!!!!
