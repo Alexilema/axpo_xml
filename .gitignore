@@ -1,3 +1,5 @@
+_pycache_
+*.pyc
 # input_data/
-# data-engineer-technical-interview.pdf
-# Dudas.txt
+data-engineer-technical-interview.pdf
+Dudas.txt
