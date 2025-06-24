@@ -68,7 +68,7 @@ xml_files = [
 # However, as we expect to process ~5000 files at once, we can speed up the
 # process by using parallel computation. There are 2 options:
 #   - locally: using the computer threads (multithreading)
-#   - on cloud: using tools like Spark (PySpark)
+#   - on cloud: using tools like Spark (more details at the end of this cell)
 # Note: both can actually be used combined!
 
 # Option 2. Parallel parsing using Multithreading
@@ -112,14 +112,22 @@ except Exception:
 # each dict (each file) corresponds to one row)
 df = pd.DataFrame(dict_list)
 
-# Note: if any of the dictionaries in dict_list is missing some keys (some columns),
-# it doesn't matter, pandas handles that on its own, including all different keys
-# found as new columns, and matching existing keys even if they don't come in the
-# same order in all the dicts. Basically, pandas makes our life easy here :)
+# Notes:
+# If any of the dictionaries in dict_list is missing some keys (some columns),
+# it doesn't matter, pandas handles that on its own, including all different
+# keys found as new columns, and matching existing keys even if they don't 
+# in the same order in all the dicts. Basically, pandas makes our life easier!
 
-# Note: once the 5.000 files have been turned into a 5.000 rows df, the rest of 
+# Once the 5.000 files have been turned into a 5.000 rows df, the rest of 
 # the processing does not need enhanced computing, as it is a very small df and
 # therefore pandas is fast enough
+
+# Remark regarding Spark:
+# The script 'xml_parser_pyspark.py' showcases how we could use pyspark to
+# compute the parsing using parallel computation in a cluster of computers.
+# However, I believe that multithreading is more than enough to process the
+# 5000 daily files within a reasonably brief period of time (less than an hour).
+# This matters cause using cloud clusters represents additional costs
 
 #%%
 # Datetime types fixing
@@ -220,8 +228,8 @@ if not os.path.isdir(output_path):
     os.mkdir(output_path)
 
 # Specify DB path
-file_db = os.path.join(output_path, 'meter_data.db')
-# Note: we could use other extensions such as .sqlite or .dat
+file_db = os.path.join(output_path, 'meter_data.sqlite')
+# Note: we could use other extensions such as .db or .dat
 
 # Connect to the DB
 conn = sqlite3.connect(file_db)
@@ -238,7 +246,7 @@ df.to_sql(name='MeterData',  # table name inside de DB
 print('Data succesfully added to the DB')
 
 #%%
-# # DEV_test: check that is worked!
+# # dev_test: check that it worked!
 
 # conn = sqlite3.connect(file_db)
 
